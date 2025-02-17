@@ -3,8 +3,8 @@ process AGGR_EXSHUF_GFFS {
     label 'process_low'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'quay.io/biocontainers/python:3.11' :
-        'https://depot.galaxyproject.org/singularity/python:3.11' }"
+        'https://depot.galaxyproject.org/singularity/python:3.11' :
+        'quay.io/biocontainers/python:3.11' }"
 
     input:
     tuple val(id), path(exon_gff), path(intron_gff), path(opp_strand_gff)

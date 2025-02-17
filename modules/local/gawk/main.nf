@@ -50,7 +50,6 @@ process GAWK_MATCH_KWORDS_AND_ID {
     tag "$id"
     label 'process_low'
 
-    conda "bioconda::gawk=5.3.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/gawk:5.3.0' :
         'quay.io/biocontainers/gawk:5.3.0' }"
