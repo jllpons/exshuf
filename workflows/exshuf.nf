@@ -5,7 +5,10 @@ include { BEDTOOLS_INTERSECT as BEDTOOLS_INTERSECT_HITS_DEACTIVATED } from '../m
 include { BEDTOOLS_SUBTRACT                                         } from '../modules/nf-core/bedtools/subtract/main'
 include { GAWK_GET_IDS                                              } from '../modules/local/gawk/main'
 include { GAWK_MATCH_KWORDS_AND_ID                                  } from '../modules/local/gawk/main'
+include { MK_ID_SETS                                                } from '../modules/local/gawk/main'
 include { AGGR_EXSHUF_GFFS                                          } from '../modules/local/python/main'
+include { HIT_TABLE as HIT_TYPE_TABLE                               } from '../modules/local/python/main'
+include { HIT_TABLE as HIT_COUNT_TABLE                              } from '../modules/local/python/main'
 
 
 workflow EXSHUF {
@@ -16,6 +19,7 @@ workflow EXSHUF {
     kw_type_gene
     kw_type_exon
     kw_type_case_sensitive
+    overlap_percentage
     ch_versions
 
 
@@ -31,7 +35,8 @@ workflow EXSHUF {
         kw_type_case_sensitive
     )
     // TODO: Here we could add a GREP module that would allow to filter the IDs based
-    //       on a provided
+    //       on a provided list of IDs.
+
     // The following will create a channel where each item is a single line of the file (ID in this case)
     ch_ids = GAWK_GET_IDS.out.ids_file
         .splitText()
@@ -133,6 +138,56 @@ workflow EXSHUF {
             keepHeader: true
         )
 
+    // NOTE: from now on, this are just luxury outputs
+    //       for us to have a better understanding of the data
+
+    HIT_TYPE_TABLE(
+        ch_aggr_input,
+        "type"
+    )
+
+
+    HIT_TYPE_TABLE.out.hit_table
+        .collectFile(
+            name: "hit_type_table.csv",
+            storeDir: "$params.outdir/summaries",
+            keepHeader: true
+        )
+
+
+    HIT_COUNT_TABLE(
+        ch_aggr_input,
+        "count"
+    )
+
+    HIT_COUNT_TABLE.out.hit_table
+        .collectFile(
+            name: "hit_count_table.csv",
+            storeDir: "$params.outdir/summaries",
+            keepHeader: true
+        )
+
+
+    MK_ID_SETS(
+        HIT_TYPE_TABLE.out.hit_table
+    )
+    MK_ID_SETS.out.exonic
+        .collectFile(
+            name: "exonic.txt",
+            storeDir: "$params.outdir/summaries/sets",
+        )
+    MK_ID_SETS.out.intronic
+        .collectFile(
+            name: "intronic.txt",
+            storeDir: "$params.outdir/summaries/sets",
+        )
+    MK_ID_SETS.out.opp_strand
+        .collectFile(
+            name: "opp_strand.txt",
+            storeDir: "$params.outdir/summaries/sets",
+        )
+
+
 
     ch_versions = ch_versions.mix(
         GAWK_GET_IDS.out.versions,
@@ -142,7 +197,9 @@ workflow EXSHUF {
         BEDTOOLS_INTERSECT_HITS_W_INTRONS.out.versions,
         BEDTOOLS_INTERSECT_HITS_W_GENE_OPP.out.versions,
         BEDTOOLS_INTERSECT_HITS_DEACTIVATED.out.versions,
-        AGGR_EXSHUF_GFFS.out.versions
+        AGGR_EXSHUF_GFFS.out.versions,
+        HIT_TYPE_TABLE.out.versions,
+        MK_ID_SETS.out.versions,
     )
 
     emit:

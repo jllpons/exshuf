@@ -29,6 +29,9 @@ Optional Arguments:
 
     --kw_type_case_sensitive    : Use case-sensitive keyword matching [default: ${params.kw_type_case_sensitive}]
 
+    --overlap_percent <float>   : Minimum overlap percentage for a hit to be considered overlapping with a feature [default: ${params.overlap_percent}]
+                                  Must be a float between 0 and 1
+
     --outdir <outdir>           : Output directory [default: ${params.outdir}]
 
     --help                      : Print help message and exit
@@ -45,6 +48,7 @@ hits                    : ${params.hits}
 kw_type_gene            : ${params.kw_type_gene}
 kw_type_exon            : ${params.kw_type_exon}
 kw_type_case_sensitive  : ${params.kw_type_case_sensitive}
+overlap_percent         : ${params.overlap_percent}
 outdir                  : ${params.outdir}
 
 --
@@ -131,6 +135,7 @@ def dumpParametersToYaml() {
         kw_type_gene: params.kw_type_gene,
         kw_type_exon: params.kw_type_exon,
         kw_type_case_sensitive: params.kw_type_case_sensitive,
+        overlap_percent: params.overlap_percent,
         outdir: params.outdir
     ]
 
@@ -164,6 +169,7 @@ workflow {
         params.kw_type_gene,
         params.kw_type_exon,
         params.kw_type_case_sensitive,
+        params.overlap_percent,
         ch_versions,
     )
     ch_versions = ch_versions.mix(EXSHUF.out.versions)

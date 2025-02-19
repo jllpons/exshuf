@@ -117,3 +117,34 @@ process GAWK_MATCH_KWORDS_AND_ID {
     END_VERSIONS
     """
 }
+
+process MK_ID_SETS {
+    tag "$id"
+    label 'process_low'
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/gawk:5.3.0' :
+        'quay.io/biocontainers/gawk:5.3.0' }"
+
+    input:
+    path hit_table
+
+    output:
+    path 'exonic.txt',     emit: exonic
+    path 'intronic.txt',   emit: intronic
+    path 'opp_strand.txt', emit: opp_strand
+    path 'versions.yml',   emit: versions
+
+
+    script:
+    """
+    cat ${hit_table} | gawk 'BEGIN {FS = ","} (\$2 == 1) {print \$1}' | sort | uniq > exonic.txt
+    cat ${hit_table} | gawk 'BEGIN {FS = ","} (\$3 == 1) {print \$1}' | sort | uniq > intronic.txt
+    cat ${hit_table} | gawk 'BEGIN {FS = ","} (\$4 == 1) {print \$1}' | sort | uniq > opp_strand.txt
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        gawk: \$(gawk --version | awk 'NR==1{print \$3}')
+    END_VERSIONS
+    """
+}
