@@ -142,7 +142,7 @@ workflow EXSHUF {
     //       for us to have a better understanding of the data
 
     HIT_TYPE_TABLE(
-        ch_aggr_input,
+        AGGR_EXSHUF_GFFS.out.aggr_data_csv,
         "type"
     )
 
@@ -156,7 +156,7 @@ workflow EXSHUF {
 
 
     HIT_COUNT_TABLE(
-        ch_aggr_input,
+        AGGR_EXSHUF_GFFS.out.aggr_data_csv,
         "count"
     )
 
