@@ -131,18 +131,17 @@ workflow EXSHUF {
         ch_aggr_input
     )
 
-    AGGR_EXSHUF_GFFS.out.aggr_data_csv
+    ch_aggr_exshuf_csv = AGGR_EXSHUF_GFFS.out.aggr_data_csv
         .collectFile(
             name: "candidate_events.csv",
             storeDir: "$params.outdir/summaries",
-            keepHeader: true
         )
 
     // NOTE: from now on, this are just luxury outputs
     //       for us to have a better understanding of the data
 
     HIT_TYPE_TABLE(
-        AGGR_EXSHUF_GFFS.out.aggr_data_csv,
+        ch_aggr_exshuf_csv,
         "type"
     )
 
@@ -151,12 +150,11 @@ workflow EXSHUF {
         .collectFile(
             name: "hit_type_table.csv",
             storeDir: "$params.outdir/summaries",
-            keepHeader: true
         )
 
 
     HIT_COUNT_TABLE(
-        AGGR_EXSHUF_GFFS.out.aggr_data_csv,
+        ch_aggr_exshuf_csv,
         "count"
     )
 
@@ -164,7 +162,6 @@ workflow EXSHUF {
         .collectFile(
             name: "hit_count_table.csv",
             storeDir: "$params.outdir/summaries",
-            keepHeader: true
         )
 
 
