@@ -37,7 +37,7 @@ process HIT_TABLE {
     val  kind
 
     output:
-    path 'hit_*_table.csv', emit: hit_table
+    path 'hit_table.csv', emit: hit_table
     path 'versions.yml',    emit: versions
 
     script:
@@ -45,7 +45,7 @@ process HIT_TABLE {
     switch(kind){
         case 'type':
             """
-            cat $aggr_data_csv | cut -d',' -f1,6 | mk_hit_type_table.py - > hit_type_table.csv
+            cat $aggr_data_csv | cut -d',' -f1,6 | mk_hit_type_table.py - > hit_table.csv
 
             cat <<-END_VERSIONS > versions.yml
             "${task.process}":
@@ -54,7 +54,7 @@ process HIT_TABLE {
             """
         case 'count':
             """
-            cat $aggr_data_csv | cut -d',' -f1,6 | mk_hit_count_table.py - > hit_count_table.csv
+            cat $aggr_data_csv | cut -d',' -f1,6 | mk_hit_count_table.py - > hit_table.csv
 
             cat <<-END_VERSIONS > versions.yml
             "${task.process}":
